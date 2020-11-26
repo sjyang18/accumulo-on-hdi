@@ -1,0 +1,5 @@
+---
+- hosts: accumulo
+  become: true
+  roles:
+    - accumulo

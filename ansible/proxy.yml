@@ -1,0 +1,25 @@
+---
+- hosts: localhost
+  connection: local
+  gather_facts: false
+  tasks: 
+    - name: "create tarball directory"
+      file: path={{ accumulo_tmpfolder }} state=directory
+
+    - name: "check if Accumulo tarball was downloaded"
+      stat: path={{ accumulo_tmpfolder }}/{{ accumulo_tarball }}
+      register: accumulo
+    
+    - name: "download Accumulo tarball"
+      get_url: url={{ accumulo_tarfile_url }} dest={{ accumulo_tmpfolder }}/{{ accumulo_tarball }} 
+      retries: 10
+      delay: 3
+      ignore_errors: true
+      when: not accumulo.stat.exists
+
+    - name: "expand templates of accumulo 2.0 configuration files and tservers"
+      template: src=roles/accumulo/templates/{{ item }} dest=/tmp/accumulo/{{ item }}
+      with_items:
+        - masters
+        - tservers
+      when: accumulo_major_version == '2'

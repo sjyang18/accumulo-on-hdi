@@ -1,0 +1,1 @@
+accumulo_zookeeper_connect: "{% for host in groups['zookeepers'] %}{{ host }}:2181{% if not loop.last %},{% endif %}{% endfor %}"

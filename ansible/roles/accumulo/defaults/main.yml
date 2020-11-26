@@ -1,0 +1,38 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+java_home: /usr/lib/jvm/java-8-openjdk-amd64
+accumulo_tmpfolder: /tmp/accumulo
+accumulo_tarfile: accumulo.tar.gz
+accumulo_tarfile_url: "https://mirrors.ocf.berkeley.edu/apache/accumulo/2.0.0/accumulo-2.0.0-src.tar.gz"
+install_dir: /usr/share
+accumulo_version: 2.0.0
+accumulo_major_version: '2'
+accumulo_home: '{{ install_dir }}/accumulo-{{ accumulo_version }}'
+domain_name: XYZ.ONMICROSOFT.COM
+accumulo_instance_name: accumulo
+accumulo_instance_volumn: 'hdfs://mycluster/{{ accumulo_instance_name }}'
+accumulo_password: Secret
+accumulo_admin_account: 'accumulo-admin@{{ domain_name }}'
+accumulo_service_principal_login: hive
+accumulo_service_principal: '{{ accumulo_service_principal_login }}/_HOST@{{ domain_name }}'
+accumulo_service_principal_keytabfile: /etc/security/keytabs/hive.service.keytab
+accumulo_build_native_cmd: {'1': '{{ accumulo_home }}/bin/build_native_library.sh', '2': '{{ accumulo_home }}/bin/accumulo-util build-native'}
+accumulo_tservers_fn: {'1': 'slaves', '2': 'tservers'}
+use_systemd: False
+cluster_user: {{ accumulo_service_principal_login }}
+cluster_group: hadoop
+num_tservers: 1

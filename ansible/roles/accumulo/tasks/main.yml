@@ -1,0 +1,66 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+- name: "install accumulo from tarball"
+  unarchive: src={{ accumulo_tmpfolder }}/{{ accumulo_tarball }} dest={{ install_dir }} creates={{ accumulo_home }} copy=yes
+  tags: install_software
+- name: "configure accumulo 2.0 configuration"
+  template: src={{ item }} dest={{ accumulo_home }}/conf/{{ item }}
+  with_items:
+    - accumulo-env.sh
+    - accumulo.properties
+    - accumulo-client.properties
+
+- name: "copy expanded configuration for accumulo 2.0 templates to nodes"
+  copy: src=/tmp/accumulo/{{ item }} dest={{ accumulo_home }}/conf/{{ item }}
+  with_items:
+    - masters
+  when: accumulo_major_version == '2'
+  tags: accumulo2
+
+- name: "configure tservers using managed templates for accumulo 2.0"
+  copy: src=/tmp/accumulo/{{ item }} dest={{ accumulo_home }}/conf/tservers
+  with_items:
+    - tservers
+  when: accumulo_major_version == '2'
+  tags: accumulo2
+
+- name: "Patch accumulo-service to support multiple tservers per node"
+  copy: src=roles/accumulo/files/accumulo-service-2.0.0 dest={{ accumulo_home }}/bin/accumulo-service
+  when: accumulo_major_version == '2' and not use_systemd
+  tags: accumulo2, install_software
+
+- name: "Patch accumulo cluster control scripts to work with systemd"
+  copy: src=roles/accumulo/files/{{ item }}-systemd dest={{ accumulo_home }}/bin/{{ item }} mode=0755
+  with_items:
+    - accumulo-cluster
+  when: use_systemd
+  tags: install_software
+
+- name: "build accumulo native libraries"
+  command: "{{ accumulo_build_native_cmd[accumulo_major_version] }}"
+  args:
+    creates: "{{ accumulo_home }}/lib/native/libaccumulo.so"
+
+
+- name: Recursively change ownership of accumulo 2.0
+  file:
+    path: "{{ accumulo_home }}"
+    state: directory
+    recurse: yes
+    owner: "{{ cluster_user }}"
+    group: "{{ cluster_group }}"

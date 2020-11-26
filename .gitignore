@@ -1,0 +1,11 @@
+*.pyc
+.idea/
+pom.xml
+*.retry
+logs/*
+.vscode/*
+ansible/testme.yml
+hosts
+
+
+
