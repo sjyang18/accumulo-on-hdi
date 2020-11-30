@@ -32,7 +32,7 @@ accumulo_service_principal: '{{ accumulo_service_principal_login }}/_HOST@{{ dom
 accumulo_service_principal_keytabfile: /etc/security/keytabs/hive.service.keytab
 accumulo_build_native_cmd: {'1': '{{ accumulo_home }}/bin/build_native_library.sh', '2': '{{ accumulo_home }}/bin/accumulo-util build-native'}
 accumulo_tservers_fn: {'1': 'slaves', '2': 'tservers'}
-use_systemd: False
+use_systemd: True
 cluster_user: {{ accumulo_service_principal_login }}
 cluster_group: hadoop
 num_tservers: 1
