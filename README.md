@@ -7,7 +7,7 @@ This git repo contains the modified Ansible playbooks that install Apache Accumu
 
 * Add/Create one Ubuntu linux VM (16.04 LTS or above) in the same VNET and subnet, having the same admin login name and the same ssh key. This VM will play the proxy role in Apache fluo-muchos, downloading a custom accumulo tarfile, running the modified accumulo playbook. We call this VM 'proxy' from now on.
 
-* Get the list of head nodes, worker nodes, and zookeeper nodes. You may get the list of hosts from /etc/hosts file once you login into your first head node. We will create an ansible host file with these list in the following step.
+* Get the list of head nodes, worker nodes, and zookeeper nodes. You may get the list of hosts from Ambari UI (https://docs.microsoft.com/en-us/azure/hdinsight/hdinsight-hadoop-manage-ambari#hosts). Or, you may get the list of hosts from /etc/hosts file once you login into your first head node. We will create an ansible host file with these list in the following step.
 
 * You have built or patched your accumulo tarfile with the kerberos patch (https://github.com/apache/accumulo/pull/1727/commits/b6a9ad000d261f201b6322031d34c60fcbbb9d5a). The patched tarfile will be downloaded in Ansible `'proxy'` playbook. Note that JRE installed in HDInsight is JRE-8 (as of 2H 2020), thus your tarfile should be compiled with matching JRE used. 
 
